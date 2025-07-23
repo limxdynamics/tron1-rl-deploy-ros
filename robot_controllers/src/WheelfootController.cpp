@@ -74,9 +74,10 @@ void WheelfootController::handleWalkMode() {
     jointPos(i) = hybridJointHandles_[i].getPosition();
     jointVel(i) = hybridJointHandles_[i].getVelocity();
   }
+  int wheel_L_idx = rl_type_ == "isaacgym" ? 3 : 6, wheel_R_idx = 7;
   // in wheel mode, wheel joint actions differ from others
   for (size_t i = 0; i < hybridJointHandles_.size(); i++) {
-    if ((i + 1) % 4 != 0) {
+    if (i != wheel_L_idx && i != wheel_R_idx) { // not wheel
       scalar_t actionMin =
           jointPos(i) - initJointAngles_(i, 0) +
           (robotCfg_.controlCfg.damping * jointVel(i) - robotCfg_.controlCfg.user_torque_limit) / robotCfg_.controlCfg.stiffness;
@@ -103,9 +104,10 @@ void WheelfootController::handleWalkMode() {
 
 // Handle standing mode
 void WheelfootController::handleStandMode() {
+  int wheel_L_idx = rl_type_ == "isaacgym" ? 3 : 6, wheel_R_idx = 7;
   if (standPercent_ < 1) {
     for (int j = 0; j < hybridJointHandles_.size(); j++) {
-      if ((j + 1) % 4 != 0) {
+      if (j != wheel_L_idx && j != wheel_R_idx) { // not wheel
         scalar_t pos_des = defaultJointAngles_[j] * (1 - standPercent_) + initJointAngles_[j] * standPercent_;
         hybridJointHandles_[j].setCommand(pos_des, 0, robotCfg_.controlCfg.stiffness,
                                           robotCfg_.controlCfg.damping, 0, 2);
@@ -230,7 +232,12 @@ bool WheelfootController::loadRLCfg() {
   try {
     // Load parameters from ROS parameter server.
     int error = 0;
-    error += static_cast<int>(!nh_.getParam("/PointfootCfg/joint_names", jointNames_));
+    if (rl_type_ == "isaacgym") {
+      error += static_cast<int>(!nh_.getParam("/PointfootCfg/joint_names_gym", jointNames_));
+    }
+    else {
+      error += static_cast<int>(!nh_.getParam("/PointfootCfg/joint_names_lab", jointNames_));
+    }
     error += static_cast<int>(!nh_.getParam("/PointfootCfg/init_state/default_joint_angle/abad_L_Joint", initState["abad_L_Joint"]));
     error += static_cast<int>(!nh_.getParam("/PointfootCfg/init_state/default_joint_angle/hip_L_Joint", initState["hip_L_Joint"]));
     error += static_cast<int>(!nh_.getParam("/PointfootCfg/init_state/default_joint_angle/knee_L_Joint", initState["knee_L_Joint"]));
@@ -267,7 +274,12 @@ bool WheelfootController::loadRLCfg() {
     error += static_cast<int>(!nh_.getParam("/PointfootCfg/init_state/default_joint_angle/wheel_L_Joint", initState["wheel_L_Joint"]));
     error += static_cast<int>(!nh_.getParam("/PointfootCfg/control/wheel_joint_damping", wheelJointDamping_));
     error += static_cast<int>(!nh_.getParam("/PointfootCfg/control/wheel_joint_torque_limit", wheelJointTorqueLimit_));
-    error += static_cast<int>(!nh_.getParam("/PointfootCfg/size/jointpos_idxs", jointPosIdxs_));
+    if (rl_type_ == "isaacgym") {
+      error += static_cast<int>(!nh_.getParam("/PointfootCfg/size/jointpos_idxs_gym", jointPosIdxs_));
+    }
+    else {
+      error += static_cast<int>(!nh_.getParam("/PointfootCfg/size/jointpos_idxs_lab", jointPosIdxs_));
+    }
     
     if (error) {
       ROS_ERROR("Load parameters from ROS parameter server error!!!");

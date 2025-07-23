@@ -211,7 +211,12 @@ bool PointfootController::loadRLCfg() {
   try {
     // Load parameters from ROS parameter server.
     int error = 0;
-    error += static_cast<int>(!nh_.getParam("/PointfootCfg/joint_names", jointNames_));
+    if (rl_type_ == "isaacgym") {
+      error += static_cast<int>(!nh_.getParam("/PointfootCfg/joint_names_gym", jointNames_));
+    }
+    else {
+      error += static_cast<int>(!nh_.getParam("/PointfootCfg/joint_names_lab", jointNames_));
+    }
     error += static_cast<int>(!nh_.getParam("/PointfootCfg/init_state/default_joint_angle/abad_L_Joint", initState["abad_L_Joint"]));
     error += static_cast<int>(!nh_.getParam("/PointfootCfg/init_state/default_joint_angle/hip_L_Joint", initState["hip_L_Joint"]));
     error += static_cast<int>(!nh_.getParam("/PointfootCfg/init_state/default_joint_angle/knee_L_Joint", initState["knee_L_Joint"]));

@@ -18,6 +18,19 @@ bool ControllerBase::init(hardware_interface::RobotHW *robot_hw, ros::NodeHandle
     ROS_ERROR("Error: Please set the ROBOT_TYPE using 'export ROBOT_TYPE=<robot_type>'.");
     abort();
   }
+  // sim-gym compatibility
+  const char* rl_value = ::getenv("RL_TYPE");
+  if (rl_value && strlen(rl_value) > 0) {
+    rl_type_ = std::string(rl_value);
+  } else {
+    ROS_ERROR("Error: Please set the RL_TYPE using 'export RL_TYPE=<isaacgym/isaaclab>'.");
+    abort();
+  }
+  if (rl_type_ != "isaacgym" && rl_type_ != "isaaclab") {
+    ROS_ERROR("Error: RL_TYPE %s is not supported, please choose between 'isaacgym' and 'isaaclab'.", rl_type_.c_str());
+    abort();
+  }
+  ROS_INFO_STREAM("Set RL_TYPE to " << rl_type_);
 
   // Determine the specific robot configuration based on the robot type
   is_point_foot_ = (robot_type_.find("PF") != std::string::npos);

@@ -213,6 +213,7 @@ protected:
   ros::Subscriber cmdVelSub_;   // Command velocity subscriber
 
   std::string robot_type_;      // Type of the robot (e.g., point foot, wheel foot, sole foot)
+  std::string rl_type_;      // Type of the rl env (e.g., isaacgym, isaaclab)
   bool is_point_foot_{false};   // Indicates if the robot has a point foot configuration
   bool is_wheel_foot_{false};   // Indicates if the robot has a wheel foot configuration
   bool is_sole_foot_{false};    // Indicates if the robot has a sole foot configuration

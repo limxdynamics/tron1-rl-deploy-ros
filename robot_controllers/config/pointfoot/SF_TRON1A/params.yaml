@@ -1,5 +1,5 @@
 PointfootCfg:
-  joint_names:
+  joint_names_gym:
     - "abad_L_Joint"
     - "hip_L_Joint"
     - "knee_L_Joint"
@@ -7,6 +7,16 @@ PointfootCfg:
     - "abad_R_Joint"
     - "hip_R_Joint"
     - "knee_R_Joint"
+    - "ankle_R_Joint"
+
+  joint_names_lab:
+    - "abad_L_Joint"
+    - "abad_R_Joint"
+    - "hip_L_Joint"
+    - "hip_R_Joint"
+    - "knee_L_Joint"
+    - "knee_R_Joint"
+    - "ankle_L_Joint"
     - "ankle_R_Joint"
 
   init_state:

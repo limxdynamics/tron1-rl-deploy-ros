@@ -47,6 +47,7 @@
 
 You can create an RL deployment development workspace by following these steps:
 - Open a Bash end point.
+
 - Create a new directory to store the workspace. For example, you can create a directory named "limx_ws" under the user's home directory:
     ```Bash
     mkdir -p ~/limx_ws/src
@@ -109,11 +110,19 @@ You can create an RL deployment development workspace by following these steps:
     echo 'export ROBOT_TYPE=PF_P441C' >> ~/.bashrc && source ~/.bashrc
     ```
   
+- Select training environment
+  
+  The currently supported training environments are isaacgym and isaaclab. Taking isaacgym as an example, set the training environment type:
+  
+  ```
+  echo 'export RL_TYPE=isaacgym' >> ~/.bashrc && source ~/.bashrc
+  ```
+  
 - Run Simulation
 
     Start the Gazebo simulator by running the Shell command, then press `Ctrl + Shift + R` in the simulator window to start the robot moving. You can also control the robot's movement by setting the publish topic of the `Robot Steering` plugin to `/cmd_vel`.
-  
-  
+
+
   ```
   source install/setup.bash
   roslaunch robot_hw pointfoot_hw_sim.launch

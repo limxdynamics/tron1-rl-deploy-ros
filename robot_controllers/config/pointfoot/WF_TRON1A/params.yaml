@@ -1,5 +1,5 @@
 PointfootCfg:
-  joint_names:
+  joint_names_gym:
     - "abad_L_Joint"
     - "hip_L_Joint"
     - "knee_L_Joint"
@@ -9,6 +9,16 @@ PointfootCfg:
     - "knee_R_Joint"
     - "wheel_R_Joint"
   
+  joint_names_lab:
+    - "abad_L_Joint"
+    - "abad_R_Joint"
+    - "hip_L_Joint"
+    - "hip_R_Joint"
+    - "knee_L_Joint"
+    - "knee_R_Joint"
+    - "wheel_L_Joint"
+    - "wheel_R_Joint"
+
   init_state:
     # target angles [rad] when action = 0.0
     default_joint_angle:
@@ -47,7 +57,8 @@ PointfootCfg:
     observations_size: 28 # 31
     commands_size: 3
     obs_history_length: 10
-    jointpos_idxs: [0, 1, 2, 4, 5, 6]
+    jointpos_idxs_gym: [0, 1, 2, 4, 5, 6]
+    jointpos_idxs_lab: [0, 1, 2, 3, 4, 5]
     encoder_output_size: 3
 
   stand_mode:

@@ -70,9 +70,10 @@ void SolefootController::handleWalkMode() {
     jointPos(i) = hybridJointHandles_[i].getPosition();
     jointVel(i) = hybridJointHandles_[i].getVelocity();
   }
+  int ankle_L_idx = rl_type_ == "isaacgym" ? 3 : 6, ankle_R_idx = 7;
   // in wheel mode, wheel joint actions differ from others
   for (size_t i = 0; i < hybridJointHandles_.size(); i++) {
-    if ((i + 1) % 4 != 0) {
+    if (i != ankle_L_idx && i != ankle_R_idx) { // not ankle
       scalar_t actionMin =
           jointPos(i) - initJointAngles_(i, 0) +
           (robotCfg_.controlCfg.damping * jointVel(i) - robotCfg_.controlCfg.user_torque_limit) / robotCfg_.controlCfg.stiffness;
@@ -86,13 +87,18 @@ void SolefootController::handleWalkMode() {
                                         0, 2);
       lastActions_(i, 0) = actions_[i];
     } else {
-      scalar_t actionMin = (jointVel(i) - ankleJointTorqueLimit_ / ankleJointDamping_);
-      scalar_t actionMax = (jointVel(i) + ankleJointTorqueLimit_ / ankleJointDamping_);
+      scalar_t actionMin =
+          jointPos(i) - initJointAngles_(i, 0) +
+          (ankleJointDamping_ * jointVel(i) - ankleJointTorqueLimit_) / robotCfg_.controlCfg.stiffness;
+      scalar_t actionMax =
+          jointPos(i) - initJointAngles_(i, 0) +
+          (ankleJointDamping_ * jointVel(i) + ankleJointTorqueLimit_) / robotCfg_.controlCfg.stiffness;
+      actions_[i] = std::max(actionMin / robotCfg_.controlCfg.action_scale_pos,
+                            std::min(actionMax / robotCfg_.controlCfg.action_scale_pos, (scalar_t)actions_[i]));
+      scalar_t pos_des = actions_[i] * robotCfg_.controlCfg.action_scale_pos + initJointAngles_(i, 0);
+      hybridJointHandles_[i].setCommand(pos_des, 0, robotCfg_.controlCfg.stiffness, ankleJointDamping_,
+                                        0, 2);
       lastActions_(i, 0) = actions_[i];
-      actions_[i] = std::max(actionMin / ankleJointDamping_,
-                    std::min(actionMax / ankleJointDamping_, (scalar_t) actions_[i]));
-      scalar_t velocity_des = actions_[i] * ankleJointDamping_;
-      hybridJointHandles_[i].setCommand(0, velocity_des, 0, ankleJointDamping_, 0, 0);
     }
   }
 }
@@ -221,7 +227,12 @@ bool SolefootController::loadRLCfg() {
   try {
     // Load parameters from ROS parameter server.
     int error = 0;
-    error += static_cast<int>(!nh_.getParam("/PointfootCfg/joint_names", jointNames_));
+    if (rl_type_ == "isaacgym") {
+      error += static_cast<int>(!nh_.getParam("/PointfootCfg/joint_names_gym", jointNames_));
+    }
+    else {
+      error += static_cast<int>(!nh_.getParam("/PointfootCfg/joint_names_lab", jointNames_));
+    }
     error += static_cast<int>(!nh_.getParam("/PointfootCfg/init_state/default_joint_angle/abad_L_Joint", initState["abad_L_Joint"]));
     error += static_cast<int>(!nh_.getParam("/PointfootCfg/init_state/default_joint_angle/hip_L_Joint", initState["hip_L_Joint"]));
     error += static_cast<int>(!nh_.getParam("/PointfootCfg/init_state/default_joint_angle/knee_L_Joint", initState["knee_L_Joint"]));
