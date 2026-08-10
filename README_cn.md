@@ -1,132 +1,126 @@
-# 简体中文 | [English](README.md)
-# 训练结果部署
+# 中文 | [English](README.md)
 
+# TRON1 RL 部署 — ROS Noetic
 
+将训练好的强化学习（RL）行走策略部署到 TRON1 双足和轮足机器人上。通过 `ros_control` 加载 ONNX 模型，在 Gazebo 仿真或真机上运行。
 
-## 1. 部署环境配置
+## 工作原理
 
-- 安装ROS Noetic：我们推荐在Ubuntu 20.04操作系统上建立基于ROS Noetic的算法开发环境。ROS提供了一系列工具和库，如核心库、通信库和仿真工具（如Gazebo），极大地便利了机器人算法的开发、测试和部署。这些资源为用户提供了一个丰富而完整的算法开发环境。ROS Noetic 安装请参考文档：https://wiki.ros.org/noetic/Installation/Ubuntu ，选择“ros-noetic-desktop-full”进行安装。ROS Noetic 安装完成后，Bash终端输入以下Shell命令，安装开发环境所依赖的库：
+```
+训练好的 ONNX 策略 (policy.onnx + encoder.onnx)
+        │
+        ▼
+  ros_control 控制器插件
+        │
+        ▼
+  Gazebo 仿真  或  TRON1 真机
+```
 
-    ```bash
-    sudo apt-get update
-    sudo apt install ros-noetic-urdf \
-                 ros-noetic-kdl-parser \
-                 ros-noetic-urdf-parser-plugin \
-                 ros-noetic-hardware-interface \
-                 ros-noetic-controller-manager \
-                 ros-noetic-controller-interface \
-                 ros-noetic-controller-manager-msgs \
-                 ros-noetic-control-msgs \
-                 ros-noetic-ros-control \
-                 ros-noetic-gazebo-* \
-                 ros-noetic-robot-state-* \
-                 ros-noetic-joint-state-* \
-                 ros-noetic-rqt-gui \
-                 ros-noetic-rqt-controller-manager \
-                 ros-noetic-plotjuggler* \
-                 cmake build-essential libpcl-dev libeigen3-dev libopencv-dev libmatio-dev \
-                 python3-pip libboost-all-dev libtbb-dev liburdfdom-dev liborocos-kdl-dev -y
-    ```
+启动文件会根据 `ROBOT_TYPE` 和 `RL_TYPE` 环境变量，自动从 `robot_controllers/config/pointfoot/<ROBOT_TYPE>/policy/<RL_TYPE>/` 加载 ONNX 策略。
 
-    
+## 1. 前提条件
 
-- 安装onnxruntime依赖，下载连接：https://github.com/microsoft/onnxruntime/releases/tag/v1.10.0  。请您根据自己的操作系统和平台选择合适版本下载。如在Ubuntu 20.04 x86_64，请按下面步骤进行安装：
-  
-    ```Bash
-    wget https://github.com/microsoft/onnxruntime/releases/download/v1.10.0/onnxruntime-linux-x64-1.10.0.tgz
-    
-    tar xvf onnxruntime-linux-x64-1.10.0.tgz
-    
-    sudo cp -a onnxruntime-linux-x64-1.10.0/include/* /usr/include
-    sudo cp -a onnxruntime-linux-x64-1.10.0/lib/* /usr/lib
-    ```
+- Ubuntu 20.04
+- ROS Noetic（`ros-noetic-desktop-full`）
+- ONNX Runtime 1.10.0
 
+### 安装 ROS 依赖
 
+```bash
+sudo apt-get update
+sudo apt install ros-noetic-urdf ros-noetic-kdl-parser ros-noetic-hardware-interface \
+    ros-noetic-controller-manager ros-noetic-controller-interface ros-noetic-ros-control \
+    ros-noetic-gazebo-* ros-noetic-robot-state-* ros-noetic-joint-state-* \
+    ros-noetic-rqt-gui ros-noetic-rqt-controller-manager ros-noetic-plotjuggler* \
+    cmake build-essential libpcl-dev libeigen3-dev libopencv-dev libmatio-dev \
+    python3-pip libboost-all-dev libtbb-dev liburdfdom-dev liborocos-kdl-dev -y
+```
 
-## 2. 创建工作空间
+### 安装 ONNX Runtime
 
-可以按照以下步骤，创建一个RL部署开发工作空间：
+```bash
+wget https://github.com/microsoft/onnxruntime/releases/download/v1.10.0/onnxruntime-linux-x64-1.10.0.tgz
+tar xvf onnxruntime-linux-x64-1.10.0.tgz
+sudo cp -a onnxruntime-linux-x64-1.10.0/include/* /usr/include
+sudo cp -a onnxruntime-linux-x64-1.10.0/lib/* /usr/lib
+```
 
-- 打开一个Bash终端。
+## 2. 编译
 
-- 创建一个新目录来存放工作空间。例如，可以在用户的主目录下创建一个名为“limx_ws”的目录：
-    ```Bash
-    mkdir -p ~/limx_ws/src
-    ```
-    
-- 下载运动控制开发接口：
-    ```Bash
-    cd ~/limx_ws/src
-    git clone https://github.com/limxdynamics/limxsdk-lowlevel.git
-    ```
-    
-- 下载Gazebo仿真器：
-    ```Bash
-    cd ~/limx_ws/src
-    git clone https://github.com/limxdynamics/tron1-gazebo-ros.git
-    ```
-    
-- 下载机器人模型描述文件
-    ```Bash
-    cd ~/limx_ws/src
-    git clone https://github.com/limxdynamics/robot-description.git
-    ```
-    
-- 下载可视化工具
-    ```Bash
-    cd ~/limx_ws/src
-    git clone https://github.com/limxdynamics/robot-visualization.git
-    ```
-    
-- 下载RL部署源码：
-    ```Bash
-    cd ~/limx_ws/src
-    git clone https://github.com/limxdynamics/tron1-rl-deploy-ros.git
-    ```
-    
-- 编译工程：
-    ```Bash
-    cd ~/limx_ws
-    catkin_make install
-    ```
+```bash
+mkdir -p ~/limx_ws/src && cd ~/limx_ws/src
+git clone https://github.com/limxdynamics/limxsdk-lowlevel.git
+git clone https://github.com/limxdynamics/tron1-gazebo-ros.git
+git clone https://github.com/limxdynamics/robot-description.git
+git clone https://github.com/limxdynamics/robot-visualization.git
+git clone https://github.com/limxdynamics/tron1-rl-deploy-ros.git
 
-- 选择机器人类型
+cd ~/limx_ws
+catkin_make install
+source install/setup.bash
+```
 
-  - 通过 Shell 命令 `tree -L 1 src/robot-description/pointfoot ` 列出可用的机器人类型：
-  
-    ```
-    src/robot-description/pointfoot
-    ├── PF_P441A
-    ├── PF_P441B
-    ├── PF_P441C
-    ├── PF_P441C2
-    ├── PF_TRON1A
-    ├── SF_TRON1A
-    └── WF_TRON1A
-    ```
-  
-  - 以`PF_P441C`（请根据实际机器人类型进行替换）为例，设置机器人型号类型：
-  
-    ```
-    echo 'export ROBOT_TYPE=PF_P441C' >> ~/.bashrc && source ~/.bashrc
-    ```
+## 3. 运行仿真
 
-- 选择训练环境
-  
-  目前支持的训练环境有`isaacgym`和`isaaclab`，以`isaacgym`为例，设置训练环境类型
-  
-  ```
-  echo 'export RL_TYPE=isaacgym' >> ~/.bashrc && source ~/.bashrc
-  ```
-  
-- 运行仿真
+### 设置机器人型号和训练环境
 
-  通过运行Shell命令启动Gazebo仿真器，然后在仿真器窗口中按 `Ctrl + Shift + R`，机器人将开始移动。您还可以通过将 `Robot Steering` 插件的发布主题设置为 `/cmd_vel` 来控制机器人的行走。
-  
-  
-  ```
-  source install/setup.bash
-  roslaunch robot_hw pointfoot_hw_sim.launch
-  ```
-  ![](doc/simulator.gif)
+可用机器人型号：`PF_P441A`、`PF_P441B`、`PF_P441C`、`PF_P441C2`、`PF_TRON1A`、`SF_TRON1A`、`WF_TRON1A`
 
+支持训练环境：`isaacgym`、`isaaclab`
+
+```bash
+echo 'export ROBOT_TYPE=PF_P441A' >> ~/.bashrc
+echo 'export RL_TYPE=isaacgym' >> ~/.bashrc
+source ~/.bashrc
+```
+
+大部分型号×环境组合已包含预训练 ONNX 策略，少数组合缺失。如果你的组合没有预训练策略，请参考[部署自有策略](#5-部署自有策略)。
+
+### 启动
+
+```bash
+source ~/limx_ws/install/setup.bash
+roslaunch robot_hw pointfoot_hw_sim.launch
+```
+
+此命令会启动 Gazebo 中的机器人，加载 ONNX RL 策略并开始推理，机器人应自动开始行走。
+
+### 启动参数
+
+| 参数 | 默认值 | 说明 |
+|------|---------|------|
+| `plot` | `false` | 设为 `true` 开启 PlotJuggler 数据可视化 |
+
+## 4. 部署到真机
+
+```bash
+source ~/limx_ws/install/setup.bash
+roslaunch robot_hw pointfoot_hw.launch
+```
+
+与仿真相同，加载同样的 ONNX 策略，但直接与真机通信。
+
+设置 `rviz:=true` 开启 RViz 可视化：
+
+```bash
+roslaunch robot_hw pointfoot_hw.launch rviz:=true
+```
+
+## 5. 部署自有策略
+
+将训练好的 ONNX 文件放到指定路径：
+
+```
+robot_controllers/config/pointfoot/<ROBOT_TYPE>/policy/<RL_TYPE>/
+    policy.onnx
+    encoder.onnx
+```
+
+然后正常启动，你的策略就会被自动加载。
+
+## 6. 相关仓库
+
+- [tron1-mujoco-sim](https://github.com/limxdynamics/tron1-mujoco-sim) — 基于 MuJoCo 的策略验证仿真
+- [tron1-rl-deploy-python](https://github.com/limxdynamics/tron1-rl-deploy-python) — Python 版 RL 部署
+- [tron1-rl-deploy-ros2](https://github.com/limxdynamics/tron1-rl-deploy-ros2) — ROS 2 Iron 版本
+- [tron1-robot-description](https://github.com/limxdynamics/tron1-robot-description) — URDF/Xacro 机器人模型
