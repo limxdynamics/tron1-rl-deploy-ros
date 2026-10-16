@@ -366,6 +366,14 @@ void WheelfootController::computeObservation() {
 
   vector_t obs(observationSize_);
   vector3_t scaled_commands = commandScaler * commands_;
+  // Isaac Gym (legged_gym) feeds the policy commands * commands_scale, where
+  // commands_scale = [obs_scales.lin_vel, obs_scales.lin_vel, obs_scales.ang_vel].
+  // Isaac Lab feeds the raw commands, so no extra scaling there.
+  if (rl_type_ == "isaacgym") {
+    scaled_commands(0) *= robotCfg_.rlCfg.obsScales.linVel;
+    scaled_commands(1) *= robotCfg_.rlCfg.obsScales.linVel;
+    scaled_commands(2) *= robotCfg_.rlCfg.obsScales.angVel;
+  }
   // Populate observation vector
   vector_t jointPos_value = (jointPos - initJointAngles_) * robotCfg_.rlCfg.obsScales.dofPos;
   vector_t jointPos_input;
