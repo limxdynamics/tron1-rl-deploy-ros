@@ -91,12 +91,14 @@ void WheelfootController::handleWalkMode() {
                                         0, 2);
       lastActions_(i, 0) = actions_[i];
     } else {
-      scalar_t actionMin = (jointVel(i) - wheelJointTorqueLimit_ / wheelJointDamping_);
-      scalar_t actionMax = (jointVel(i) + wheelJointTorqueLimit_ / wheelJointDamping_);
+      // Same as training: target wheel velocity = action * action_scale_vel, torque = kd * (target - velocity).
+      // Clip the target so that |kd * (target - velocity)| stays within the wheel torque limit.
+      scalar_t velocityMin = jointVel(i) - wheelJointTorqueLimit_ / wheelJointDamping_;
+      scalar_t velocityMax = jointVel(i) + wheelJointTorqueLimit_ / wheelJointDamping_;
       lastActions_(i, 0) = actions_[i];
-      actions_[i] = std::max(actionMin / wheelJointDamping_,
-                    std::min(actionMax / wheelJointDamping_, (scalar_t) actions_[i]));
-      scalar_t velocity_des = actions_[i] * wheelJointDamping_;
+      actions_[i] = std::max(velocityMin / robotCfg_.controlCfg.action_scale_vel,
+                    std::min(velocityMax / robotCfg_.controlCfg.action_scale_vel, (scalar_t) actions_[i]));
+      scalar_t velocity_des = actions_[i] * robotCfg_.controlCfg.action_scale_vel;
       hybridJointHandles_[i].setCommand(0, velocity_des, 0, wheelJointDamping_, 0, 0);
     }
   }
@@ -249,6 +251,13 @@ bool WheelfootController::loadRLCfg() {
     error += static_cast<int>(!nh_.getParam("/PointfootCfg/control/stiffness", controlCfg.stiffness));
     error += static_cast<int>(!nh_.getParam("/PointfootCfg/control/damping", controlCfg.damping));
     error += static_cast<int>(!nh_.getParam("/PointfootCfg/control/action_scale_pos", controlCfg.action_scale_pos));
+    // Wheel velocity action scale differs between the two training setups (isaacgym 0.5, isaaclab 1.0)
+    if (rl_type_ == "isaacgym") {
+      error += static_cast<int>(!nh_.getParam("/PointfootCfg/control/action_scale_vel_gym", controlCfg.action_scale_vel));
+    }
+    else {
+      error += static_cast<int>(!nh_.getParam("/PointfootCfg/control/action_scale_vel_lab", controlCfg.action_scale_vel));
+    }
     error += static_cast<int>(!nh_.getParam("/PointfootCfg/control/decimation", controlCfg.decimation));
     error += static_cast<int>(!nh_.getParam("/PointfootCfg/control/user_torque_limit", controlCfg.user_torque_limit));
     error += static_cast<int>(!nh_.getParam("/PointfootCfg/normalization/clip_scales/clip_observations", robotCfg_.rlCfg.clipObs));
@@ -260,6 +269,10 @@ bool WheelfootController::loadRLCfg() {
     error += static_cast<int>(!nh_.getParam("/PointfootCfg/size/actions_size", actionsSize_));
     error += static_cast<int>(!nh_.getParam("/PointfootCfg/size/observations_size", observationSize_));
     error += static_cast<int>(!nh_.getParam("/PointfootCfg/size/obs_history_length", obsHistoryLength_));
+    if (controlCfg.action_scale_vel <= 0) {
+      ROS_ERROR("action_scale_vel must be > 0 (got %f)", controlCfg.action_scale_vel);
+      error += 1;
+    }
     error += static_cast<int>(!nh_.getParam("/PointfootCfg/size/encoder_output_size", encoderOutputSize_));
 
     error += static_cast<int>(!nh_.getParam("/PointfootCfg/imu_orientation_offset/yaw", imu_orientation_offset[0]));

@@ -39,6 +39,9 @@ PointfootCfg:
     wheel_joint_damping: 0.8
     wheel_joint_torque_limit: 40
     action_scale_pos: 0.25
+    # wheel velocity action scale, must match the training config (isaacgym: control.action_scale_vel, isaaclab: joint_vel scale)
+    action_scale_vel_gym: 0.5
+    action_scale_vel_lab: 1.0
     decimation: 10
     user_torque_limit: 80
 
