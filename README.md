@@ -2,6 +2,8 @@
 
 # TRON1 RL Deployment — ROS Noetic
 
+> 🧭 **Part of the TRON1 open-source ecosystem.** All TRON1 repositories and where to start: [TRON1 open-source ecosystem](https://github.com/limxdynamics/tron1-rl-isaacgym#tron1-open-source-ecosystem).
+
 Deploy trained reinforcement learning (RL) walking policies to TRON1 biped and wheel-legged robots via ROS Noetic. Loads ONNX models through `ros_control` and runs them on Gazebo simulation or real hardware.
 
 ## How It Works

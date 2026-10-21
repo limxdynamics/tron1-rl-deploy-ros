@@ -2,6 +2,8 @@
 
 # TRON1 RL 部署 — ROS Noetic
 
+> 🧭 **TRON1 开源生态的一部分。** TRON1 全部开源仓库和上手路线：[TRON1 开源生态](https://github.com/limxdynamics/tron1-rl-isaacgym/blob/master/README_cn.md#tron1-开源生态)。
+
 将训练好的强化学习（RL）行走策略部署到 TRON1 双足和轮足机器人上。通过 `ros_control` 加载 ONNX 模型，在 Gazebo 仿真或真机上运行。
 
 ## 工作原理
