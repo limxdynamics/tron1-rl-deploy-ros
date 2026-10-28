@@ -1,4 +1,6 @@
-# 中文 | [English](README.md)
+<p align="center">
+  <a href="README.md">English</a> | <b>中文</b>
+</p>
 
 # TRON1 RL 部署 — ROS Noetic
 
