@@ -1,4 +1,8 @@
 <p align="center">
+  <img src="doc/banner.png" alt="TRON1 RL 部署：面向 pointfoot / solefoot / wheelfoot 三种腿型的 ONNX 行走策略" width="100%">
+</p>
+
+<p align="center">
   <a href="README.md">English</a> | <b>中文</b>
 </p>
 
@@ -10,15 +14,12 @@
 
 ## 工作原理
 
-```
-训练好的 ONNX 策略 (policy.onnx + encoder.onnx)
-        │
-        ▼
-  ros_control 控制器插件
-        │
-        ▼
-  Gazebo 仿真  或  TRON1 真机
-```
+<p align="center">
+  <img src="doc/figures/pipeline.png" alt="policy.onnx 与 encoder.onnx 送入 controller_manager，再由同一个插件驱动 Gazebo 或真机" width="100%">
+</p>
+
+<p align="center"><sub>两个 launch，同一份策略；差别只在硬件接口。</sub></p>
+
 
 启动文件会根据 `ROBOT_TYPE` 和 `RL_TYPE` 环境变量，自动从 `robot_controllers/config/pointfoot/<ROBOT_TYPE>/policy/<RL_TYPE>/` 加载 ONNX 策略。
 
@@ -80,6 +81,13 @@ source ~/.bashrc
 
 大部分型号×环境组合已包含预训练 ONNX 策略，少数组合缺失。如果你的组合没有预训练策略，请参考[部署自有策略](#5-部署自有策略)。
 
+<p align="center">
+  <img src="doc/figures/policy-layout.png" alt="ROBOT_TYPE 与 RL_TYPE 展开成策略文件路径，以 PF_TRON1A + isaacgym 为例" width="100%">
+</p>
+
+<p align="center"><sub><code>ROBOT_TYPE</code> 与 <code>RL_TYPE</code> 展开成文件路径；你自己的 ONNX 也放在同一个目录结构里。</sub></p>
+
+
 ### 启动
 
 ```bash
@@ -121,6 +129,13 @@ robot_controllers/config/pointfoot/<ROBOT_TYPE>/policy/<RL_TYPE>/
 ```
 
 然后正常启动，你的策略就会被自动加载。
+
+<p align="center">
+  <img src="doc/figures/control-loop.png" alt="一个 20 ms 的策略周期由十个 2 ms 硬件周期组成，以及其中的观测到关节目标链路" width="100%">
+</p>
+
+<p align="center"><sub>控制器每 20 ms 做的事：观测进，关节目标出。</sub></p>
+
 
 ## 6. 相关仓库
 

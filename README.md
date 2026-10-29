@@ -1,4 +1,8 @@
 <p align="center">
+  <img src="doc/banner.png" alt="TRON1 RL Deployment: ONNX walking policies for pointfoot, solefoot and wheelfoot legs" width="100%">
+</p>
+
+<p align="center">
   <b>English</b> | <a href="README_cn.md">中文</a>
 </p>
 
@@ -10,15 +14,12 @@ Deploy trained reinforcement learning (RL) walking policies to TRON1 biped and w
 
 ## How It Works
 
-```
-Trained ONNX policy (policy.onnx + encoder.onnx)
-        │
-        ▼
-  ros_control controller plugin
-        │
-        ▼
-  Gazebo simulation  OR  Real TRON1 hardware
-```
+<p align="center">
+  <img src="doc/figures/pipeline.png" alt="policy.onnx and encoder.onnx feed controller_manager, which drives either Gazebo or the real TRON1 through the same plugin" width="100%">
+</p>
+
+<p align="center"><sub>Two launch files, one policy. Only the hardware interface changes.</sub></p>
+
 
 The launch files automatically load the ONNX policy from `robot_controllers/config/pointfoot/<ROBOT_TYPE>/policy/<RL_TYPE>/` based on your `ROBOT_TYPE` and `RL_TYPE` environment variables.
 
@@ -80,6 +81,13 @@ source ~/.bashrc
 
 Pre-trained ONNX policies are included for most but not all combinations. If your combination lacks a policy, see [Deploy Your Own Policy](#5-deploy-your-own-policy).
 
+<p align="center">
+  <img src="doc/figures/policy-layout.png" alt="ROBOT_TYPE and RL_TYPE expand into the policy file path, with a worked example for PF_TRON1A and isaacgym" width="100%">
+</p>
+
+<p align="center"><sub><code>ROBOT_TYPE</code> and <code>RL_TYPE</code> expand into the file path; the same layout is where your own ONNX pair goes.</sub></p>
+
+
 ### Launch
 
 ```bash
@@ -121,6 +129,13 @@ robot_controllers/config/pointfoot/<ROBOT_TYPE>/policy/<RL_TYPE>/
 ```
 
 Then launch as usual — your custom policy will be loaded automatically.
+
+<p align="center">
+  <img src="doc/figures/control-loop.png" alt="One 20 ms policy step made of ten 2 ms hardware cycles, and the observation to joint-target chain inside it" width="100%">
+</p>
+
+<p align="center"><sub>What the controller does every 20 ms: observations in, joint targets out.</sub></p>
+
 
 ## 6. Related Repositories
 
