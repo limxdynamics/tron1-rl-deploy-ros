@@ -6,6 +6,13 @@
   <a href="README.md">English</a> | <b>中文</b>
 </p>
 
+<p align="center">
+  <a href="LICENSE"><img src="https://img.shields.io/badge/license-Apache--2.0-3d7eff" alt="License: Apache-2.0"></a>
+  <img src="https://img.shields.io/badge/ROS-Noetic-3d7eff" alt="ROS Noetic">
+  <img src="https://img.shields.io/badge/Ubuntu-20.04-3d7eff" alt="Ubuntu 20.04">
+  <img src="https://img.shields.io/badge/ONNX%20Runtime-1.10.0-5a6b85" alt="ONNX Runtime 1.10.0">
+</p>
+
 # TRON1 RL 部署 — ROS Noetic
 
 > 🧭 **TRON1 开源生态的一部分。** TRON1 全部开源仓库和上手路线：[TRON1 开源生态](https://github.com/limxdynamics/tron1-rl-isaacgym/blob/master/README_cn.md#tron1-开源生态)。
