@@ -10,7 +10,8 @@
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-Apache--2.0-3d7eff" alt="License: Apache-2.0"></a>
   <img src="https://img.shields.io/badge/ROS-Noetic-3d7eff" alt="ROS Noetic">
   <img src="https://img.shields.io/badge/Ubuntu-20.04-3d7eff" alt="Ubuntu 20.04">
-  <img src="https://img.shields.io/badge/ONNX%20Runtime-1.10.0-5a6b85" alt="ONNX Runtime 1.10.0">
+  <img src="https://img.shields.io/badge/ONNX%20Runtime-1.10.0-3d7eff" alt="ONNX Runtime 1.10.0">
+  <a href="https://github.com/limxdynamics/tron1-rl-deploy-ros2"><img src="https://img.shields.io/badge/also-ROS%202%20Iron-5a6b85" alt="Also available for ROS 2 Iron"></a>
 </p>
 
 # TRON1 RL Deployment — ROS Noetic
@@ -161,5 +162,4 @@ Then launch as usual — your custom policy will be loaded automatically.
 
 - [tron1-mujoco-sim](https://github.com/limxdynamics/tron1-mujoco-sim) — MuJoCo simulation for policy validation
 - [tron1-rl-deploy-python](https://github.com/limxdynamics/tron1-rl-deploy-python) — Python-based RL deployment
-- [tron1-rl-deploy-ros2](https://github.com/limxdynamics/tron1-rl-deploy-ros2) — ROS 2 Iron version
 - [tron1-robot-description](https://github.com/limxdynamics/tron1-robot-description) — URDF/Xacro robot models
