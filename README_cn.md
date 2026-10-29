@@ -69,7 +69,15 @@ source install/setup.bash
 
 ### 设置机器人型号和训练环境
 
-可用机器人型号：`PF_P441A`、`PF_P441B`、`PF_P441C`、`PF_P441C2`、`PF_TRON1A`、`SF_TRON1A`、`WF_TRON1A`
+可用机器人型号 —— `robot_controllers/config/pointfoot/` 下每个目录是一种：
+
+| 机型 | `ROBOT_TYPE` | 关节数 |
+| --- | --- | --- |
+| Pointfoot，双足点足 | `PF_P441A`、`PF_P441B`、`PF_P441C`、`PF_P441C2`、`PF_TRON1A`、`PF_TRON1B` | 6 |
+| Solefoot，双足平足 | `SF_TRON1A`、`SF_TRON1B` | 8 |
+| Wheelfoot，双足轮足 | `WF_TRON1A`、`WF_TRON1B` | 8（6 关节 + 2 轮） |
+
+`A` 与 `B` 是同一机型的两种结构版本：关节布局与 `params.yaml` 里的控制参数完全一致，只有 `robot-description` 里的网格不同。
 
 支持训练环境：`isaacgym`、`isaaclab`
 
@@ -79,7 +87,7 @@ echo 'export RL_TYPE=isaacgym' >> ~/.bashrc
 source ~/.bashrc
 ```
 
-大部分型号×环境组合已包含预训练 ONNX 策略，少数组合缺失。如果你的组合没有预训练策略，请参考[部署自有策略](#5-部署自有策略)。
+每个 `<ROBOT_TYPE>` × `<RL_TYPE>` 组合都带预训练策略对。三个 `B` 版本——`PF_TRON1B`、`SF_TRON1B`、`WF_TRON1B`——没有顶层 `policy/` 那对文件，而 `controller_sim.launch` 读的正是它；这三型请设好 `RL_TYPE`，用 `pointfoot_hw.launch` 或 `pointfoot_hw_sim.launch`。要换成自己的策略见[部署自有策略](#5-部署自有策略)。
 
 <p align="center">
   <img src="doc/figures/policy-layout.png" alt="ROBOT_TYPE 与 RL_TYPE 展开成策略文件路径，以 PF_TRON1A + isaacgym 为例" width="100%">

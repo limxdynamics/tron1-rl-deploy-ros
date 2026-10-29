@@ -69,7 +69,16 @@ source install/setup.bash
 
 ### Set robot type and training environment
 
-Available robot types: `PF_P441A`, `PF_P441B`, `PF_P441C`, `PF_P441C2`, `PF_TRON1A`, `SF_TRON1A`, `WF_TRON1A`
+Available robot types — one directory per morphology and build:
+
+| Morphology | `ROBOT_TYPE` | Joints |
+| --- | --- | --- |
+| Pointfoot, biped on point feet | `PF_P441A`, `PF_P441B`, `PF_P441C`, `PF_P441C2`, `PF_TRON1A`, `PF_TRON1B` | 6 |
+| Solefoot, biped on flat feet | `SF_TRON1A`, `SF_TRON1B` | 8 |
+| Wheelfoot, biped on wheels | `WF_TRON1A`, `WF_TRON1B` | 8 (6 joints + 2 wheels) |
+
+`A` and `B` are two builds of the same morphology: same joint layout and the
+same values in `params.yaml`, different meshes in `robot-description`.
 
 Supported training environments: `isaacgym`, `isaaclab`
 
@@ -79,7 +88,11 @@ echo 'export RL_TYPE=isaacgym' >> ~/.bashrc
 source ~/.bashrc
 ```
 
-Pre-trained ONNX policies are included for most but not all combinations. If your combination lacks a policy, see [Deploy Your Own Policy](#5-deploy-your-own-policy).
+Every `<ROBOT_TYPE>` × `<RL_TYPE>` combination ships a pre-trained policy pair.
+The three `B` variants — `PF_TRON1B`, `SF_TRON1B`, `WF_TRON1B` — have no
+top-level `policy/` pair, which is the one `controller_sim.launch` reads, so set
+`RL_TYPE` and use `pointfoot_hw.launch` or `pointfoot_hw_sim.launch` for those.
+To ship your own policy instead, see [Deploy Your Own Policy](#5-deploy-your-own-policy).
 
 <p align="center">
   <img src="doc/figures/policy-layout.png" alt="ROBOT_TYPE and RL_TYPE expand into the policy file path, with a worked example for PF_TRON1A and isaacgym" width="100%">
