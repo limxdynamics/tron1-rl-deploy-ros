@@ -64,7 +64,7 @@ sudo cp -a onnxruntime-linux-x64-1.10.0/lib/* /usr/lib
 mkdir -p ~/limx_ws/src && cd ~/limx_ws/src
 git clone https://github.com/limxdynamics/limxsdk-lowlevel.git
 git clone https://github.com/limxdynamics/tron1-gazebo-ros.git
-git clone https://github.com/limxdynamics/robot-description.git
+git clone https://github.com/limxdynamics/tron1-robot-description.git robot-description
 git clone https://github.com/limxdynamics/robot-visualization.git
 git clone https://github.com/limxdynamics/tron1-rl-deploy-ros.git
 
