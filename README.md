@@ -6,17 +6,13 @@
   <b>English</b> | <a href="README_cn.md">中文</a>
 </p>
 
-<!-- limx-community:start -->
-<!-- Managed by limxdynamics/limxdynamics/.github/community/sync_community.py; QR code: doc/wechat_qr.png in that repo -->
-<p align="center"><a href="https://github.com/limxdynamics/limxdynamics/blob/main/doc/wechat_qr.png"><img src="https://img.shields.io/badge/Join%20Our%20WeChat%20Community-All%20Projects%20Welcome-07C160?style=for-the-badge&logo=wechat&logoColor=white" alt="WeChat Community"></a></p>
-<!-- limx-community:end -->
-
 <p align="center">
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-Apache--2.0-3d7eff" alt="License: Apache-2.0"></a>
   <img src="https://img.shields.io/badge/ROS-Noetic-3d7eff" alt="ROS Noetic">
   <img src="https://img.shields.io/badge/Ubuntu-20.04-3d7eff" alt="Ubuntu 20.04">
   <img src="https://img.shields.io/badge/ONNX%20Runtime-1.10.0-3d7eff" alt="ONNX Runtime 1.10.0">
   <a href="https://github.com/limxdynamics/tron1-rl-deploy-ros2"><img src="https://img.shields.io/badge/also-ROS%202%20Iron-5a6b85" alt="Also available for ROS 2 Iron"></a>
+  <a href="https://github.com/limxdynamics/limxdynamics/blob/main/doc/wechat_qr.png"><img src="https://img.shields.io/badge/WeChat-Developer%20Community-07C160?logo=wechat&logoColor=white" alt="WeChat Community"></a>
 </p>
 
 # TRON1 RL Deployment — ROS Noetic
